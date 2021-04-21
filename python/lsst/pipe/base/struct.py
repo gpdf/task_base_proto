@@ -33,8 +33,8 @@ class Struct:
 
     Notes
     -----
-    Intended to be used for the return value from `~lsst.pipe.base.Task.run`
-    and other `~lsst.pipe.base.Task` methods, and useful for any method that
+    Intended to be used for the return value from `~lsst.task.base.Task.run`
+    and other `~lsst.task.base.Task` methods, and useful for any method that
     returns multiple values.
 
     The intent is to allow accessing returned items by name, instead of

@@ -36,8 +36,8 @@ def logPairs(obj, pairs, logLevel=Log.DEBUG):
 
     Parameters
     ----------
-    obj : `lsst.pipe.base.Task`-type
-        A `~lsst.pipe.base.Task` or any other object with these two attributes:
+    obj : `lsst.task.base.Task`-type
+        A `~lsst.task.base.Task` or any other object with these two attributes:
 
         - ``metadata`` an instance of `lsst.daf.base.PropertyList`` (or other
           object with ``add(name, value)`` method).
@@ -65,8 +65,8 @@ def logInfo(obj, prefix, logLevel=Log.DEBUG):
 
     Parameters
     ----------
-    obj : `lsst.pipe.base.Task`-type
-        A `~lsst.pipe.base.Task` or any other object with these two attributes:
+    obj : `lsst.task.base.Task`-type
+        A `~lsst.task.base.Task` or any other object with these two attributes:
 
         - ``metadata`` an instance of `lsst.daf.base.PropertyList`` (or other
           object with ``add(name, value)`` method).
@@ -141,11 +141,11 @@ def timeMethod(func):
 
     .. code-block:: python
 
-        import lsst.pipe.base as pipeBase
-        class FooTask(pipeBase.Task):
+        import lsst.task.base as taskBase
+        class FooTask(taskBase.Task):
             pass
 
-            @pipeBase.timeMethod
+            @taskBase.timeMethod
             def run(self, ...): # or any other instance method you want to time
                 pass
     """
