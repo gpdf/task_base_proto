@@ -1,2 +1,2 @@
 modules:
-  - "lsst.pipe.base"
+  - "lsst.task.base"

@@ -1,8 +1,8 @@
 ###############################
-pipe_base documentation preview
+task_base documentation preview
 ###############################
 
 .. toctree::
    :maxdepth: 1
 
-   lsst.pipe.base/index
+   lsst.task.base/index
