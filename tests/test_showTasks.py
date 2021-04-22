@@ -26,7 +26,7 @@ import textwrap
 
 import lsst.utils.tests
 import lsst.pex.config as pexConfig
-import lsst.pipe.base as pipeBase
+import lsst.task.base as taskBase
 
 
 class SimpleTaskConfig(pexConfig.Config):
@@ -34,7 +34,7 @@ class SimpleTaskConfig(pexConfig.Config):
     sf3 = pexConfig.Field(doc="str 1", dtype=str, default="default for sf1")
 
 
-class SimpleTask(pipeBase.Task):
+class SimpleTask(taskBase.Task):
     ConfigClass = SimpleTaskConfig
 
 
@@ -45,7 +45,7 @@ class TaskWithSubtasksConfig(pexConfig.Config):
     sf2 = pexConfig.Field(doc="str 1", dtype=str, default="default for sf1")
 
 
-class TaskWithSubtasks(pipeBase.Task):
+class TaskWithSubtasks(taskBase.Task):
     ConfigClass = TaskWithSubtasksConfig
 
 
@@ -56,7 +56,7 @@ class MainTaskConfig(pexConfig.Config):
     sf1 = pexConfig.Field(doc="str 2", dtype=str, default="default for strField")
 
 
-class MainTask(pipeBase.Task):
+class MainTask(taskBase.Task):
     ConfigClass = MainTaskConfig
 
 
@@ -84,7 +84,7 @@ class ShowTasksTestCase(unittest.TestCase):
         tempStdOut = io.StringIO()
         savedStdOut, sys.stdout = sys.stdout, tempStdOut
         try:
-            pipeBase.argumentParser.showTaskHierarchy(config)
+            taskBase.argumentParser.showTaskHierarchy(config)   #FIXME
         finally:
             sys.stdout = savedStdOut
         formatRead = tempStdOut.getvalue().strip()

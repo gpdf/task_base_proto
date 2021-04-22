@@ -27,20 +27,20 @@ import lsst.utils.tests
 import lsst.daf.base as dafBase
 from lsst.log import Log
 import lsst.pex.config as pexConfig
-import lsst.pipe.base as pipeBase
+import lsst.task.base as taskBase
 
 
 class AddConfig(pexConfig.Config):
     addend = pexConfig.Field(doc="amount to add", dtype=float, default=3.1)
 
 
-class AddTask(pipeBase.Task):
+class AddTask(taskBase.Task):
     ConfigClass = AddConfig
 
-    @pipeBase.timeMethod
+    @taskBase.timeMethod
     def run(self, val):
         self.metadata.add("add", self.config.addend)
-        return pipeBase.Struct(
+        return taskBase.Struct(
             val=val + self.config.addend,
         )
 
@@ -49,13 +49,13 @@ class MultConfig(pexConfig.Config):
     multiplicand = pexConfig.Field(doc="amount by which to multiply", dtype=float, default=2.5)
 
 
-class MultTask(pipeBase.Task):
+class MultTask(taskBase.Task):
     ConfigClass = MultConfig
 
-    @pipeBase.timeMethod
+    @taskBase.timeMethod
     def run(self, val):
         self.metadata.add("mult", self.config.multiplicand)
-        return pipeBase.Struct(
+        return taskBase.Struct(
             val=val * self.config.multiplicand,
         )
 
@@ -71,28 +71,28 @@ class AddMultConfig(pexConfig.Config):
     mult = multRegistry.makeField("mult task", default="stdMult")
 
 
-class AddMultTask(pipeBase.Task):
+class AddMultTask(taskBase.Task):
     ConfigClass = AddMultConfig
     _DefaultName = "addMult"
 
     """First add, then multiply"""
 
     def __init__(self, **keyArgs):
-        pipeBase.Task.__init__(self, **keyArgs)
+        taskBase.Task.__init__(self, **keyArgs)
         self.makeSubtask("add")
         self.makeSubtask("mult")
 
-    @pipeBase.timeMethod
+    @taskBase.timeMethod
     def run(self, val):
         with self.timer("context"):
             addRet = self.add.run(val)
             multRet = self.mult.run(addRet.val)
             self.metadata.add("addmult", multRet.val)
-            return pipeBase.Struct(
+            return taskBase.Struct(
                 val=multRet.val,
             )
 
-    @pipeBase.timeMethod
+    @taskBase.timeMethod
     def failDec(self):
         """A method that fails with a decorator
         """
@@ -110,7 +110,7 @@ class AddTwiceTask(AddTask):
 
     def run(self, val):
         addend = self.config.addend
-        return pipeBase.Struct(val=val + (2 * addend))
+        return taskBase.Struct(val=val + (2 * addend))
 
 
 class TaskTestCase(unittest.TestCase):
