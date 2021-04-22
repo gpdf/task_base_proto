@@ -1,9 +1,10 @@
+# This file is part of task_base.
 #
-# LSST Data Management System
-# Copyright 2008-2016 AURA/LSST.
-#
-# This product includes software developed by the
-# LSST Project (http://www.lsst.org/).
+# Developed for the LSST Data Management System.
+# This product includes software developed by the LSST Project
+# (https://www.lsst.org).
+# See the COPYRIGHT file at the top-level directory of this distribution
+# for details of code ownership.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,10 +16,9 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the LSST License Statement and
-# the GNU General Public License along with this program.  If not,
-# see <http://www.lsstcorp.org/LegalNotices/>.
-#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 __all__ = ["Task", "TaskError"]
 
 import contextlib
@@ -91,43 +91,42 @@ class Task:
     -----
     Useful attributes include:
 
-    - ``log``: an lsst.log.Log
+    - ``log``: an lsst.log.Log **(TO BE CHANGED)**
     - ``config``: task-specific configuration; an instance of ``ConfigClass``
       (see below).
-    - ``metadata``: an `lsst.daf.base.PropertyList` for collecting
+    - ``metadata``: an `lsst.daf.base.PropertyList` **(TO BE CHANGED)** for collecting
       task-specific metadata, e.g. data quality and performance metrics.
       This is data that is only meant to be persisted, never to be used by
       the task.
 
-    Subclasses typically have a method named ``runDataRef`` to perform the
+    Subclasses typically have a method named ``run()`` to perform the
     main data processing. Details:
 
-    - ``runDataRef`` should process the minimum reasonable amount of data,
-      typically a single CCD.  Iteration, if desired, is performed by a caller
-      of the method. This is good design and allows multiprocessing without
-      the run method having to support it directly.
-    - If ``runDataRef`` can persist or unpersist data:
-
-      - ``runDataRef`` should accept a butler data reference (or a collection
-        of data references, if appropriate, e.g. coaddition).
-      - There should be a way to run the task without persisting data.
-        Typically the run method returns all data, even if it is persisted, and
-        the task's config method offers a flag to disable persistence.
-
-    **Deprecated:** Tasks other than cmdLineTask.CmdLineTask%s should *not*
-    accept a blob such as a butler data reference.  How we will handle data
-    references is still TBD, so don't make changes yet!
-    RHL 2014-06-27
+    - ``run()`` should take Python-domain objects as arguments, perform a
+      computation, and return a ``struct`` with the results.  Generally
+      this method should process the minimum reasonable amount of data,
+      e.g., a single CCD.  Iteration, if desired, is performed by a
+      caller of the ``run()`` method, and in particular often at the level
+      of an enclosing ``PipelineTask``.
+      This is good design and allows multiprocessing without the ``run()``
+      method having to support it directly.
+    - Except in truly exceptional cases, which should be subject to
+      architectural review, the ``run()`` method of a ``Task`` should not
+      perform any I/O, even through a ``Butler``.  In general, a ``Task``
+      class which is not also a ``PipelineTask`` should not perform I/O
+      at all.
+    - ``run()`` may treat its arguments as mutable, but the implementation
+      should document if it does so.
 
     Subclasses must also have an attribute ``ConfigClass`` that is a subclass
     of `lsst.pex.config.Config` which configures the task. Subclasses should
     also have an attribute ``_DefaultName``: the default name if there is no
-    parent task. ``_DefaultName`` is required for subclasses of
-    `~lsst.pipe.base.CmdLineTask` and recommended for subclasses of Task
+    parent task. ``_DefaultName`` is recommended for subclasses of ``Task``
     because it simplifies construction (e.g. for unit tests).
 
-    Tasks intended to be run from the command line should be subclasses of
-    `~lsst.pipe.base.CmdLineTask` not Task.
+    Tasks intended to be directly executable as part of a ``Pipeline``
+    should be implemented as subclasses of `~lsst.pipe.base.PipelineTask`
+    rather than ``Task`` itself.
     """
 
     def __init__(self, config=None, name=None, parentTask=None, log=None):

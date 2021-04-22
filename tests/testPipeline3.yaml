@@ -1,6 +1,0 @@
-description: Test Pipeline
-tasks:
-  modE: "test.moduleE"
-subsets:
-  modSubset:
-    - modE

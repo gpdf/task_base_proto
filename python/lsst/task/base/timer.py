@@ -1,9 +1,10 @@
+# This file is part of task_base.
 #
-# LSST Data Management System
-# Copyright 2008, 2009, 2010, 2011 LSST Corporation.
-#
-# This product includes software developed by the
-# LSST Project (http://www.lsst.org/).
+# Developed for the LSST Data Management System.
+# This product includes software developed by the LSST Project
+# (https://www.lsst.org).
+# See the COPYRIGHT file at the top-level directory of this distribution
+# for details of code ownership.
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -15,12 +16,12 @@
 # MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 # GNU General Public License for more details.
 #
-# You should have received a copy of the LSST License Statement and
-# the GNU General Public License along with this program.  If not,
-# see <http://www.lsstcorp.org/LegalNotices/>.
-#
+# You should have received a copy of the GNU General Public License
+# along with this program.  If not, see <https://www.gnu.org/licenses/>.
+
 """Utilities for measuring execution time.
 """
+
 __all__ = ["logInfo", "timeMethod"]
 
 import functools
@@ -36,8 +37,8 @@ def logPairs(obj, pairs, logLevel=Log.DEBUG):
 
     Parameters
     ----------
-    obj : `lsst.pipe.base.Task`-type
-        A `~lsst.pipe.base.Task` or any other object with these two attributes:
+    obj : `lsst.task.base.Task`-type
+        A `~lsst.task.base.Task` or any other object with these two attributes:
 
         - ``metadata`` an instance of `lsst.daf.base.PropertyList`` (or other
           object with ``add(name, value)`` method).
@@ -65,8 +66,8 @@ def logInfo(obj, prefix, logLevel=Log.DEBUG):
 
     Parameters
     ----------
-    obj : `lsst.pipe.base.Task`-type
-        A `~lsst.pipe.base.Task` or any other object with these two attributes:
+    obj : `lsst.task.base.Task`-type
+        A `~lsst.task.base.Task` or any other object with these two attributes:
 
         - ``metadata`` an instance of `lsst.daf.base.PropertyList`` (or other
           object with ``add(name, value)`` method).
@@ -141,11 +142,11 @@ def timeMethod(func):
 
     .. code-block:: python
 
-        import lsst.pipe.base as pipeBase
-        class FooTask(pipeBase.Task):
+        import lsst.task.base as taskBase
+        class FooTask(taskBase.Task):
             pass
 
-            @pipeBase.timeMethod
+            @taskBase.timeMethod
             def run(self, ...): # or any other instance method you want to time
                 pass
     """

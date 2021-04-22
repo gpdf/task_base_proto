@@ -1,3 +1,0 @@
-description: Test Pipeline
-tasks:
-  modSubset: "test.moduleA"
