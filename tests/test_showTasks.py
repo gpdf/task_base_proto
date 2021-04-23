@@ -24,7 +24,6 @@ import io
 import unittest
 import textwrap
 
-import lsst.utils.tests
 import lsst.pex.config as pexConfig
 import lsst.task.base as taskBase
 
@@ -64,8 +63,8 @@ c = MainTaskConfig()
 
 
 class ShowTasksTestCase(unittest.TestCase):
-    """A test case for the code that implements ArgumentParser's --show tasks
-    option.
+    """A test case for task_utils.showTaskHierarchy,
+    the code that implements ArgumentParser's --show tasks option.
     """
 
     def testBasicShowTaskHierarchy(self):
@@ -84,7 +83,7 @@ class ShowTasksTestCase(unittest.TestCase):
         tempStdOut = io.StringIO()
         savedStdOut, sys.stdout = sys.stdout, tempStdOut
         try:
-            taskBase.argumentParser.showTaskHierarchy(config)   #FIXME
+            taskBase.task_utils.showTaskHierarchy(config)
         finally:
             sys.stdout = savedStdOut
         formatRead = tempStdOut.getvalue().strip()
@@ -92,14 +91,5 @@ class ShowTasksTestCase(unittest.TestCase):
         self.assertEqual(formatRead, formatExpected)
 
 
-class MyMemoryTestCase(lsst.utils.tests.MemoryTestCase):
-    pass
-
-
-def setup_module(module):
-    lsst.utils.tests.init()
-
-
 if __name__ == "__main__":
-    lsst.utils.tests.init()
     unittest.main()
