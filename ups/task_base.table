@@ -1,5 +1,4 @@
-setupRequired(log)
 setupRequired(pex_config)
-setupRequired(utils)
+setupOptional(base)
 
 envPrepend(PYTHONPATH, ${PRODUCT_DIR}/python)

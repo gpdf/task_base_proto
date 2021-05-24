@@ -22,10 +22,9 @@
 import time
 import unittest
 import numbers
+import logging
+from collections.abc import Mapping
 
-import lsst.utils.tests
-import lsst.daf.base as dafBase
-from lsst.log import Log
 import lsst.pex.config as pexConfig
 import lsst.task.base as taskBase
 
@@ -163,31 +162,31 @@ class TaskTestCase(unittest.TestCase):
         """Test the Task's logger
         """
         addMultTask = AddMultTask()
-        self.assertEqual(addMultTask.log.getName(), "addMult")
-        self.assertEqual(addMultTask.add.log.getName(), "addMult.add")
+        self.assertEqual(addMultTask.log.name, "addMult")
+        self.assertEqual(addMultTask.add.log.name, "addMult.add")
 
-        log = Log.getLogger("tester")
+        log = logging.getLogger("tester")
         addMultTask = AddMultTask(log=log)
-        self.assertEqual(addMultTask.log.getName(), "tester.addMult")
-        self.assertEqual(addMultTask.add.log.getName(), "tester.addMult.add")
+        self.assertEqual(addMultTask.log.name, "tester.addMult")
+        self.assertEqual(addMultTask.add.log.name, "tester.addMult.add")
 
     def testGetFullMetadata(self):
         """Test getFullMetadata()
         """
         addMultTask = AddMultTask()
         fullMetadata = addMultTask.getFullMetadata()
-        self.assertIsInstance(fullMetadata.getPropertySet("addMult"), dafBase.PropertySet)
-        self.assertIsInstance(fullMetadata.getPropertySet("addMult:add"), dafBase.PropertySet)
-        self.assertIsInstance(fullMetadata.getPropertySet("addMult:mult"), dafBase.PropertySet)
+        self.assertIsInstance(fullMetadata.get("addMult"), Mapping)
+        self.assertIsInstance(fullMetadata.get("addMult:add"), Mapping)
+        self.assertIsInstance(fullMetadata.get("addMult:mult"), Mapping)
 
     def testEmptyMetadata(self):
         task = AddMultTask()
         task.run(val=1.2345)
         task.emptyMetadata()
         fullMetadata = task.getFullMetadata()
-        self.assertEqual(fullMetadata.getPropertySet("addMult").nameCount(), 0)
-        self.assertEqual(fullMetadata.getPropertySet("addMult:add").nameCount(), 0)
-        self.assertEqual(fullMetadata.getPropertySet("addMult:mult").nameCount(), 0)
+        self.assertEqual(len(fullMetadata.get("addMult")), 0)
+        self.assertEqual(len(fullMetadata.get("addMult:add")), 0)
+        self.assertEqual(len(fullMetadata.get("addMult:mult")), 0)
 
     def testReplace(self):
         """Test replacing one subtask with another
@@ -211,12 +210,12 @@ class TaskTestCase(unittest.TestCase):
             addMultTask.failDec()
             self.fail("Expected RuntimeError")
         except RuntimeError:
-            self.assertTrue(addMultTask.metadata.exists("failDecEndCpuTime"))
+            self.assertTrue("failDecEndCpuTime" in addMultTask.metadata)
         try:
             addMultTask.failCtx()
             self.fail("Expected RuntimeError")
         except RuntimeError:
-            self.assertTrue(addMultTask.metadata.exists("failCtxEndCpuTime"))
+            self.assertTrue("failCtxEndCpuTime" in addMultTask.metadata)
 
     def testTimeMethod(self):
         """Test that the timer is adding the right metadata
@@ -239,38 +238,29 @@ class TaskTestCase(unittest.TestCase):
             for when in ("Start", "End"):
                 for method in ("run", "context"):
                     name = method + when + key
-                    self.assertIn(name, addMultTask.metadata.names(),
+                    self.assertIn(name, addMultTask.metadata.keys(),
                                   name + " is missing from task metadata")
-                    self.assertIsInstance(addMultTask.metadata.getScalar(name), keyType,
+                    self.assertIsInstance(addMultTask.metadata.get(name), keyType,
                                           f"{name} is not of the right type "
-                                          f"({keyType} vs {type(addMultTask.metadata.getScalar(name))})")
+                                          f"({keyType} vs {type(addMultTask.metadata.get(name))})")
         # Some basic sanity checks
         currCpuTime = time.process_time()
         self.assertLessEqual(
-            addMultTask.metadata.getScalar("runStartCpuTime"),
-            addMultTask.metadata.getScalar("runEndCpuTime"),
+            addMultTask.metadata.get("runStartCpuTime"),
+            addMultTask.metadata.get("runEndCpuTime"),
         )
-        self.assertLessEqual(addMultTask.metadata.getScalar("runEndCpuTime"), currCpuTime)
+        self.assertLessEqual(addMultTask.metadata.get("runEndCpuTime"), currCpuTime)
         self.assertLessEqual(
-            addMultTask.metadata.getScalar("contextStartCpuTime"),
-            addMultTask.metadata.getScalar("contextEndCpuTime"),
+            addMultTask.metadata.get("contextStartCpuTime"),
+            addMultTask.metadata.get("contextEndCpuTime"),
         )
-        self.assertLessEqual(addMultTask.metadata.getScalar("contextEndCpuTime"), currCpuTime)
+        self.assertLessEqual(addMultTask.metadata.get("contextEndCpuTime"), currCpuTime)
         self.assertLessEqual(
-            addMultTask.add.metadata.getScalar("runStartCpuTime"),
-            addMultTask.metadata.getScalar("runEndCpuTime"),
+            addMultTask.add.metadata.get("runStartCpuTime"),
+            addMultTask.metadata.get("runEndCpuTime"),
         )
-        self.assertLessEqual(addMultTask.add.metadata.getScalar("runEndCpuTime"), currCpuTime)
-
-
-class MyMemoryTestCase(lsst.utils.tests.MemoryTestCase):
-    pass
-
-
-def setup_module(module):
-    lsst.utils.tests.init()
+        self.assertLessEqual(addMultTask.add.metadata.get("runEndCpuTime"), currCpuTime)
 
 
 if __name__ == "__main__":
-    lsst.utils.tests.init()
     unittest.main()
